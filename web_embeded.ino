@@ -4,10 +4,12 @@
 //#include <HTTPClient.h>  //HTTP 전송을 위한 라이브러리
 #include <PubSubClient.h> //MQTT 사용을 위한 라이브러리
 
-#define ESP32_GPIO1 5
+//릴레이와 연결한 IO 설정
+#define ESP32_GPIO1 5      
 #define ESP32_GPIO2 17
 #define ESP32_GPIO4 16
 
+//WIFI 아이디, 비번 , MQTT 서버 , 포트 
 const char* ssid = "KT_GiGA_2G_Wave2_1123";          // your network SSID (name)
 const char* pass = "ke77ff4984";                     // your network password
 const char* mqttServer = "172.30.1.53";
@@ -16,6 +18,7 @@ const int mqttPort = 1883;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
+//개별멀티탭 초기상태설정 , 제어를 위한 변수 설정
 int stateTab1 =1;
 int stateTab2 =1;
 int stateTab3 = 1;
@@ -24,7 +27,7 @@ char msg1[50];
 char msg2[50];
 char msg3[50];
 
-// set up the 'counter' feed
+// AdafruitIO_feed 테스트 
 //AdafruitIO_Feed *counter = io.feed("first");
 //AdafruitIO_Feed *counter2 = io.feed("second");
 //AdafruitIO_Feed *counter4 = io.feed("third");
