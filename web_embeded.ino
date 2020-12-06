@@ -12,7 +12,7 @@
 //WIFI 아이디, 비번 , MQTT 서버 , 포트 
 const char* ssid = "KT_GiGA_2G_Wave2_1123";          // your network SSID (name)
 const char* pass = "ke77ff4984";                     // your network password
-const char* mqttServer = "172.30.1.53";
+const char* mqttServer = "172.30.1.53";              //mqtt 설치한 기기 IP 입력
 const int mqttPort = 1883;
 //HTTPClient http;  
 WiFiClient espClient;
@@ -62,11 +62,13 @@ void reconnect() {
     // Attempt to connect
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
-      // Once connected, publish an announcement...
+      // Once connected, publish an announcement... 
+      // 3개의 탭을 제어하기 위해 개별의 topic을 둠 
       client.publish("/kkwon57/tab1", "FROM esp32 : tab1 connect");
       client.publish("/kkwon57/tab2", "FROM esp32 : tab2 connect");
       client.publish("/kkwon57/tab3", "FROM esp32 : tab3 connect");
       // ... and resubscribe
+      //제어를 위한 토픽은 하나만 있으면 됨 (받은 데이터를 분류해서 사용)
       client.subscribe("/kkwon57/tab_control");
     } else {
       Serial.print("failed, rc=");
@@ -103,6 +105,7 @@ void setup() {
    pinMode(ESP32_GPIO2, OUTPUT);
    pinMode(ESP32_GPIO4, OUTPUT);
    
+    // 초기세팅은 켜짐으로, 원래 LOW 가 아니라 HIGH 가 보통인데 찾아보니 LOW 인 경우가 있고 해결방법은 딱히 없고 바꿔쓰라고 하는거 같음 .. 
    digitalWrite(ESP32_GPIO1,LOW);
    digitalWrite(ESP32_GPIO2,LOW);
    digitalWrite(ESP32_GPIO4,LOW);
@@ -145,6 +148,7 @@ void loop() {
     reconnect();
   }
   client.loop();
+  //탭 상태로 보낼 메세지 패키징 후 PUB
   packet1 = "tab1 state :   " + String(stateTab1); 
   packet2 = "tab2 state :   " + String(stateTab2); 
   packet3 = "tab3 state :   " + String(stateTab3); 
@@ -157,6 +161,7 @@ void loop() {
   delay(500);
 }
 
+//제어토픽으로 오는 메세지를 받아서 출력 후 분류해서 탭 제어
 void callback(char* topic, byte* payload, unsigned int length) {
   
 String Msg="";
